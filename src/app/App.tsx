@@ -3,9 +3,9 @@ import logo from './logo.svg';
 import './App.css';
 import store from '../store';
 import { Provider } from 'react-redux';
-import AppHeader from './header';
-import AppFooter from './footer';
-import { BrowserRouter, Route } from 'react-router-dom';
+import AppHeader from './Header';
+import AppFooter from './Footer';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import DailyTrackerScreen from '../feature/daily-tracker/DailyTrackerScreen';
 
 function App() {
@@ -13,7 +13,9 @@ function App() {
     <Provider store={store}>
       <AppHeader></AppHeader>
       <BrowserRouter>
+      <Routes>
         <Route path="/" element={DailyTrackerScreen}/>
+      </Routes>
       </BrowserRouter>
       <AppFooter></AppFooter>
     </Provider>
