@@ -1,10 +1,15 @@
 import { configureStore } from "@reduxjs/toolkit";
+import api from "../api/api";
 
-export interface RootState {}
+export interface RootState {
+  api: ReturnType<typeof api.reducer>;
+}
 
 export function makeStore(partialState?: Partial<RootState>) {
   return configureStore({
-    reducer: {},
+    reducer: {
+      [api.reducerPath]: api.reducer,
+    },
     preloadedState: partialState,
   });
 }

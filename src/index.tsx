@@ -5,6 +5,12 @@ import App from "./app/App";
 import reportWebVitals from "./reportWebVitals";
 import CssBaseline from "@mui/material/CssBaseline";
 
+if (process.env.NODE_ENV === "development") {
+  const { worker } = require("./msw/browser");
+
+  worker.start();
+}
+
 ReactDOM.render(
   <React.StrictMode>
     <React.Fragment>
