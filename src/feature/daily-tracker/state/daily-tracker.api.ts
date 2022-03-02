@@ -21,13 +21,13 @@ const apiWithTrackerEndpoints = api.injectEndpoints({
 
     updateTracker: builder.mutation<
       DailyTrackerData,
-      { id: string; status: DailyTrackerStatus }
+      { id?: string; name?: string; date?: string; status?: DailyTrackerStatus }
     >({
       invalidatesTags: ["getDailyTrackers"],
-      query: ({ id, status }) => ({
-        url: `/tracker/${id}`,
-        method: "PATCH",
-        body: { status },
+      query: (body) => ({
+        url: `/tracker`,
+        method: "PUT",
+        body,
       }),
     }),
   }),
