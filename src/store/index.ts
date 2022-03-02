@@ -1,4 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
+import { curryGetDefaultMiddleware } from "@reduxjs/toolkit/dist/getDefaultMiddleware";
 import api from "../api/api";
 
 export interface RootState {
@@ -8,9 +9,11 @@ export interface RootState {
 export function makeStore(partialState?: Partial<RootState>) {
   return configureStore({
     reducer: {
-      [api.reducerPath]: api.reducer,
+      api: api.reducer,
     },
     preloadedState: partialState,
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware().concat(api.middleware),
   });
 }
 

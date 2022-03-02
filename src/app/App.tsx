@@ -1,12 +1,10 @@
 import React from "react";
-import logo from "./logo.svg";
-import "./App.css";
-import store from "../store";
 import { Provider } from "react-redux";
-import AppHeader from "./Header";
-import AppFooter from "./Footer";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import DailyTrackerPage from "../feature/daily-tracker/DailyTrackerPage";
+import store from "../store";
+import AppFooter from "./Footer";
+import AppHeader from "./Header";
 
 function App() {
   return (

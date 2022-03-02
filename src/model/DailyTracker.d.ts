@@ -1,7 +1,8 @@
 export interface DailyTrackerData {
-  id: number;
+  id: string;
   name: string;
   status: DailyTrackerStatus;
+  date: string;
 }
 
 export type DailyTrackerStatus =
