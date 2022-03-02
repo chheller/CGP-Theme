@@ -5,11 +5,13 @@ import {
 } from "@mui/icons-material";
 import { IconButton, Typography, useTheme } from "@mui/material";
 import { Box } from "@mui/system";
+import { DateTime } from "luxon";
 import { match } from "ts-pattern";
 import {
   DailyTrackerData,
   DailyTrackerStatus,
 } from "../../../model/DailyTracker";
+import { initializeArray } from "../../../util/array";
 import { useUpdateTrackerMutation } from "../state/daily-tracker.api";
 
 interface DailyTrackerProps {
@@ -18,18 +20,6 @@ interface DailyTrackerProps {
 }
 
 export default function DailyTracker({ trackerName, data }: DailyTrackerProps) {
-  const [trigger, query] = useUpdateTrackerMutation();
-
-  function handleTrackerClick(id: string, status: DailyTrackerStatus) {
-    const updatedStatus = match<DailyTrackerStatus, DailyTrackerStatus>(status)
-      .with("complete", () => "incomplete")
-      .with("partially_complete", () => "complete")
-      .with("incomplete", () => "partially_complete")
-      .run();
-
-    trigger({ id, status: updatedStatus });
-  }
-
   return (
     <Box
       component="span"
@@ -59,26 +49,62 @@ export default function DailyTracker({ trackerName, data }: DailyTrackerProps) {
           display: "flex",
         }}
       >
-        {data.map((trackerDate) => (
-          <IconButton
-            key={trackerDate.id}
-            color="inherit"
-            disabled={
-              query.isLoading && query.originalArgs?.id === trackerDate.id
-            }
-            onClick={() =>
-              handleTrackerClick(trackerDate.id, trackerDate.status)
-            }
-          >
-            {match(trackerDate.status)
-              .with("complete", () => <Circle />)
-              .with("partially_complete", () => <RadioButtonCheckedSharp />)
-              .otherwise(() => (
-                <RadioButtonUncheckedSharp />
-              ))}
-          </IconButton>
-        ))}
+        {initializeArray(7, (idx) => DateTime.utc().minus({ days: idx })).map(
+          (date) => (
+            <DailyTrackerIcon
+              date={date.toISODate()}
+              trackerName={trackerName}
+              trackerData={data.find((tracker) =>
+                date.hasSame(DateTime.fromISO(tracker.date), "day")
+              )}
+            />
+          )
+        )}
       </Box>
     </Box>
+  );
+}
+
+function DailyTrackerIcon({
+  date,
+  trackerName,
+  trackerData,
+}: {
+  date: string;
+  trackerName: string;
+  trackerData?: DailyTrackerData;
+}) {
+  const [trigger, query] = useUpdateTrackerMutation();
+
+  function handleTrackerClick(tracker: Omit<DailyTrackerData, "id">) {
+    const updatedStatus = match<DailyTrackerStatus, DailyTrackerStatus>(
+      tracker.status
+    )
+      .with("complete", () => "incomplete")
+      .with("partially_complete", () => "complete")
+      .with("incomplete", () => "partially_complete")
+      .run();
+
+    trigger({ ...tracker, status: updatedStatus });
+  }
+
+  return (
+    <IconButton
+      key={date}
+      color="inherit"
+      disabled={query.isLoading && query.originalArgs?.date === date}
+      onClick={() =>
+        handleTrackerClick(
+          trackerData ?? { date, name: trackerName, status: "incomplete" }
+        )
+      }
+    >
+      {match(trackerData?.status ?? "incomplete")
+        .with("complete", () => <Circle />)
+        .with("partially_complete", () => <RadioButtonCheckedSharp />)
+        .otherwise(() => (
+          <RadioButtonUncheckedSharp />
+        ))}
+    </IconButton>
   );
 }

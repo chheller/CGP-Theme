@@ -10,6 +10,7 @@ export default function CreateNewTracker() {
   const [trigger, query] = useUpdateTrackerMutation();
   function addNewTask() {
     trigger({ name: newTaskName });
+    setNewTaskName("");
   }
   return (
     <Box
